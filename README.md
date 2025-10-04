@@ -35,5 +35,12 @@ It helps users add, edit, delete, and mark tasks as completed — all saved in *
 
 ---
 
-   ```bash
-   git clone https://github.com/your-username/todo-list-app.git
+## 👩‍💻 Author
+Savitha Kumari
+
+## 🌐 Portfolio -  https://saviportfolio.netlify.app/
+
+## 💌 Email - savithakumari0918@gmail.com
+
+## 💻 GitHub - https://github.com/SavithakumariC/--
+
