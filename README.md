@@ -38,7 +38,7 @@ It helps users add, edit, delete, and mark tasks as completed — all saved in *
 ## 👩‍💻 Author
 Savitha Kumari
 
-## 🌐 Portfolio -  https://saviportfolio.netlify.app/
+## 🌐 Todo App - https://taskplannertodo.netlify.app/
 
 ## 💌 Email - savithakumari0918@gmail.com
 
