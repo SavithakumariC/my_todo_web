@@ -1,40 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TODO List App</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Premium Todo List</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="bg-blur-circle"></div>
 
     <main class="main">
+      <div class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
+        <i class="ri-moon-line"></i>
+      </div>
 
-    <section class="section1">
-    <h1 class="heading">Todo List</h1>
-    <section class="task_section">
-        <div class="enterTask">
-            <input type="text" id="inputTask" placeholder="Enter Task"/>
+      <section class="section1">
+        <h1 class="heading">Todo List</h1>
+        <p class="subtitle">Manage your tasks with style</p>
+
+        <div class="progress-wrapper">
+          <div class="progress-info">
+            <span class="progress-label">Your Daily Progress</span>
+            <span class="progress-text" id="progressText">0%</span>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
         </div>
-        <div class="addTaskDiv">
-        <button type="button" id="addTaskBtn"><i class="bi bi-plus"></i></button>
+
+        <div style="height: 1.5rem"></div>
+
+        <section class="task_section">
+          <div class="enterTask">
+            <input
+              type="text"
+              id="inputTask"
+              placeholder="What needs to be done?"
+              autocomplete="off"
+            />
+          </div>
+          <div class="addTaskDiv">
+            <button type="button" id="addTaskBtn" title="Add Task">
+              <i class="ri-add-line"></i>
+            </button>
+          </div>
+        </section>
+      </section>
+
+      <section class="section2">
+        <div id="emptyState">
+          <div class="empty-icon-wrapper">
+            <i class="ri-clipboard-line empty-icon"></i>
+          </div>
+          <p>No tasks yet. Add your first task above!</p>
         </div>
-    </section>
-    </section>
 
-
-    <section class="section2" style="display: none;">
-        <div class="mainDiv">
-
-        </div>
-    </section>
-
+        <div class="mainDiv"></div>
+      </section>
     </main>
+
     <script src="script.js"></script>
-    
-</body>
+  </body>
 </html>

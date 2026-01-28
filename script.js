@@ -1,170 +1,172 @@
-let inputTask = document.getElementById("inputTask")
-let addTaskBtn = document.getElementById("addTaskBtn")
-let parent = document.querySelector(".main")
-let mainDiv = document.querySelector(".mainDiv")
-let taskList = document.querySelector(".section2")
-let taskSection = document.querySelector(".task_section")
+// --- DOM Elements ---
+const inputTask = document.getElementById("inputTask");
+const addTaskBtn = document.getElementById("addTaskBtn");
+const mainDiv = document.querySelector(".mainDiv");
+const emptyState = document.getElementById("emptyState");
+const progressBar = document.getElementById("progressBar");
+const progressText = document.getElementById("progressText");
+const themeToggle = document.getElementById("themeToggle");
 
+// --- Data Initialization ---
+let taskArr = JSON.parse(localStorage.getItem("tasks")) || [];
 
+// --- Core Logic Functions ---
 
-let taskArr = JSON.parse(localStorage.getItem("tasks")) || []
-console.log(JSON.parse(localStorage.getItem("tasks")))
-
-
-function saveTasks(){
-    localStorage.setItem("tasks", JSON.stringify(taskArr))
+// Save to LocalStorage and Refresh UI
+function syncData() {
+  localStorage.setItem("tasks", JSON.stringify(taskArr));
+  updateUI();
 }
 
-function renderTask(taskObj){
+// Update Progress Bar, Text, and Empty State
+function updateUI() {
+  // 1. Toggle Empty State
+  emptyState.style.display = taskArr.length === 0 ? "block" : "none";
 
-    //task container
-    const taskContainer = document.createElement("div")
-    taskContainer.className = "taskContainer"
-
-    //checkbox div
-    const taskStsDiv = document.createElement("div")
-    taskStsDiv.className = "taskStsDiv"
-
-    let cb = document.createElement("input")
-    cb.type = "checkbox"
-    cb.className = "checkbox"
-
-    cb.addEventListener("change",function(){
-        let check = cb.checked
-        console.log(check,"check value")
-        let taskTextDiv = taskContainer.querySelector(".taskTextDiv")
-
-        if(check === true){
-            taskTextDiv.style.textDecoration = "line-through"
-            taskObj.sts = true
-        saveTasks()
-
-        }
-        else if(check === false){
-            taskTextDiv.style.textDecoration ="none"
-            taskObj.sts = false
-        saveTasks()
-
-        }
-
-    })
-
-    //text div
-    const taskTextDiv = document.createElement("div")
-    taskTextDiv.className = "taskTextDiv"
-    taskTextDiv.innerText = taskObj.description || inputTask.value
-
-    if(taskObj.sts === true){
-        taskTextDiv.style.textDecoration = "line-through"
-        cb.checked = true
-    }
-    else if(taskObj.sts === false){
-        taskTextDiv.style.textDecoration = "none"
-        cb.checked =false
-    }
-    console.log(inputTask.value,"inputtask val")
-
-    //edit div
-    const taskControlDiv = document.createElement("div")
-    taskControlDiv.className = "taskControlDiv"
-
-    //edit
-    let taskEditDiv = document.createElement("div")
-    taskEditDiv.className = "taskEditDiv"
-    const editIcon = document.createElement("i")
-    editIcon.className = "bi bi-pencil-square"
-    taskEditDiv.appendChild(editIcon)
-    taskControlDiv.appendChild(taskEditDiv)
-
-    editIcon.addEventListener("click",function(e){
-        let addTaskDiv = taskContainer.querySelector(".taskTextDiv")
-        let editTask = taskContainer.querySelector(".editInput")
-        console.log(addTaskDiv, "addTaskDiv")
-
-        if(addTaskDiv && !editTask){
-            cb.setAttribute("disabled", true)
-            let editInput = document.createElement("input")
-            editInput.type = "text"
-            editInput.className = "editInput"
-            editInput.value = addTaskDiv.innerText
-            addTaskDiv.replaceWith(editInput)
-            editInput.focus()
-            console.log(editInput.value, "editinput value")
-            saveTasks()
-   
-        }
-        else if(editTask){
-            cb.removeAttribute("disabled")
-            let newEditedVal = document.createElement("div")
-            newEditedVal.className = "taskTextDiv"
-            newEditedVal.innerText = editTask.value
-            console.log(editTask.value,"new edited value")
-            editTask.replaceWith(newEditedVal)
-            taskObj.description = newEditedVal.innerText
-             
-            console.log(taskObj.description,"taskobj description", "edited val innnerte", newEditedVal.innerText)
-            saveTasks()
-        }
-
-    })
- 
-    //remove
-    const taskRemoveDiv = document.createElement("div")
-    taskRemoveDiv.className = "taskRemoveDiv"
-    const delIcon = document.createElement("i")
-    delIcon.className = "bi bi-trash-fill"
-    delIcon.style.color = "#af0a0a"
-    taskRemoveDiv.appendChild(delIcon)
-    taskControlDiv.appendChild(taskRemoveDiv)
-
-    delIcon.addEventListener("click",function(e){
-        let taskContainer = e.target.closest(".taskContainer")
-        let index = taskArr.findIndex((arr)=> arr.description === taskObj.description)
-        console.log(index, "index of the deleted item")
-        taskArr.splice(index,1)
-        taskContainer.remove() 
-        console.log("task container", taskContainer)    
-        saveTasks()
-        console.log("task arrya after deleting array of specific", taskArr)      
-    })
-
-    
-    taskStsDiv.appendChild(cb)
-    taskContainer.appendChild(taskStsDiv)
-    taskContainer.appendChild(taskTextDiv)
-    taskContainer.appendChild(taskControlDiv)
-
-    mainDiv.prepend(taskContainer)
-
-
+  // 2. Calculate Progress
+  if (taskArr.length === 0) {
+    progressBar.style.width = "0%";
+    progressText.innerText = "0%";
+  } else {
+    const completedCount = taskArr.filter((t) => t.sts).length;
+    const percentage = Math.round((completedCount / taskArr.length) * 100);
+    progressBar.style.width = percentage + "%";
+    progressText.innerText = percentage + "%";
+  }
 }
-function loadTasks(){
-    if(taskArr.length > 0){
-        taskArr.forEach(task => renderTask(task))
-        
-        taskList.style.display = "flex"
-        taskList.style.margin = "30px 0px"
-        taskList.style.maxWidth = "80vw"
-        taskList.style.flexWrap = "wrap"
-        parent.style.margin = "60px 10px"
-    }else{
-        taskList.style.display = "none"
-    }
+
+// Render a task element
+function renderTask(taskObj) {
+  const taskContainer = document.createElement("div");
+  taskContainer.className = "taskContainer";
+  if (taskObj.sts) taskContainer.classList.add("completed-task");
+
+  // Checkbox
+  const cb = document.createElement("input");
+  cb.type = "checkbox";
+  cb.className = "checkbox";
+  cb.checked = taskObj.sts;
+
+  const taskTextDiv = document.createElement("div");
+  taskTextDiv.className = "taskTextDiv";
+  taskTextDiv.innerText = taskObj.description;
+  if (taskObj.sts) taskTextDiv.style.textDecoration = "line-through";
+
+  // Checkbox Event
+  cb.addEventListener("change", function () {
+    taskObj.sts = cb.checked;
+    taskTextDiv.style.textDecoration = cb.checked ? "line-through" : "none";
+    taskContainer.classList.toggle("completed-task", cb.checked);
+    syncData();
+  });
+
+  // Controls Container
+  const taskControlDiv = document.createElement("div");
+  taskControlDiv.className = "taskControlDiv";
+
+  // --- NEW INLINE EDIT LOGIC ---
+  const editBtn = document.createElement("div");
+  editBtn.className = "taskEditDiv";
+  editBtn.innerHTML = '<i class="ri-pencil-line"></i>';
+
+  editBtn.onclick = () => {
+    // If already editing, don't do anything
+    if (taskTextDiv.querySelector(".inline-edit-input")) return;
+
+    const originalText = taskObj.description;
+    const editInput = document.createElement("input");
+    editInput.type = "text";
+    editInput.className = "inline-edit-input";
+    editInput.value = originalText;
+
+    taskTextDiv.innerHTML = "";
+    taskTextDiv.appendChild(editInput);
+    editInput.focus();
+
+    // Save Function
+    const saveEdit = () => {
+      const newText = editInput.value.trim();
+      if (newText && newText !== "") {
+        taskObj.description = newText;
+        taskTextDiv.innerText = newText;
+        syncData();
+      } else {
+        taskTextDiv.innerText = originalText; // Revert if empty
+      }
+    };
+
+    editInput.onkeypress = (e) => {
+      if (e.key === "Enter") saveEdit();
+    };
+    editInput.onblur = saveEdit; // Save if user clicks away
+  };
+
+  // Delete Button
+  const deleteBtn = document.createElement("div");
+  deleteBtn.className = "taskRemoveDiv";
+  deleteBtn.innerHTML = '<i class="ri-delete-bin-line"></i>';
+  deleteBtn.onclick = () => {
+    // Slide out animation
+    taskContainer.style.transform = "translateX(30px)";
+    taskContainer.style.opacity = "0";
+    setTimeout(() => {
+      taskArr = taskArr.filter((t) => t !== taskObj);
+      taskContainer.remove();
+      syncData();
+    }, 300);
+  };
+
+  taskControlDiv.appendChild(editBtn);
+  taskControlDiv.appendChild(deleteBtn);
+
+  taskContainer.appendChild(cb);
+  taskContainer.appendChild(taskTextDiv);
+  taskContainer.appendChild(taskControlDiv);
+
+  mainDiv.prepend(taskContainer);
 }
-addTaskBtn.addEventListener("click",function(){
-    if(!inputTask.value)return
-    let newTask = {"description" : inputTask.value, "sts" : false}
-    taskArr.unshift(newTask)
-    saveTasks()
-    renderTask(newTask)
 
-    taskList.style.display = "flex"
-    taskList.style.margin = "30px 0px"
-    taskList.style.maxWidth = "80vw"
-    taskList.style.flexWrap = "wrap"
-    parent.style.margin = "60px 10px"
+// --- Initialization ---
 
-    inputTask.value = ""
-})
+function init() {
+  mainDiv.innerHTML = "";
+  taskArr.forEach(renderTask);
+  updateUI();
 
-window.addEventListener("DOMContentLoaded", loadTasks)
+  // Apply saved theme
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark-mode");
+    themeToggle.querySelector("i").className = "ri-sun-line";
+  }
+}
+
+function addNewTask() {
+  const val = inputTask.value.trim();
+  if (!val) return;
+
+  const newTask = { description: val, sts: false };
+  taskArr.push(newTask);
+  renderTask(newTask);
+  inputTask.value = "";
+  syncData();
+}
+
+// --- Global Event Listeners ---
+
+addTaskBtn.onclick = addNewTask;
+
+inputTask.onkeypress = (e) => {
+  if (e.key === "Enter") addNewTask();
+};
+
+themeToggle.onclick = () => {
+  document.body.classList.toggle("dark-mode");
+  const isDark = document.body.classList.contains("dark-mode");
+  themeToggle.querySelector("i").className = isDark
+    ? "ri-sun-line"
+    : "ri-moon-line";
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+};
+
+// Start the app
+init();
